@@ -21,16 +21,16 @@ export class Bird extends Component {
     private body: RigidBody2D;
 
     onLoad(){
-        this.resetBird();
-
         this.birdAnimation = this.getComponent(Animation);
-        this.body = this.getComponent(RigidBody2D); 
+        this.body = this.getComponent(RigidBody2D);
+        this.resetBird();
     }
 
     resetBird(){
         this.birdLocation = new Vec3(0,0,0);
-
         this.node.setPosition(this.birdLocation);
+        this.node.angle= 0;
+        if (this.body) this.body.linearVelocity = new Vec2(0,0);
         this.hitSomething = false;
     }
 
@@ -38,6 +38,13 @@ export class Bird extends Component {
         this.birdAnimation.stop();
         this.body.linearVelocity = new Vec2(0, this.jumpHeight);
         this.birdAnimation.play();
+    }
+
+    update(){
+        const vy = this.body.linearVelocity.y;
+        const t = Math.max(-1, Math.min(1, vy / this.jumpHeight));
+        const target = t > 0 ? t * 30 : t * 30;
+        this.node.angle += (target - this.node.angle) * 0.2;
     }
 }
 
